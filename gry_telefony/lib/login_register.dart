@@ -86,7 +86,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _errorMessage() {
-    return Text(errorMessage == '' ? '' : 'Hmm? $errorMessage');
+    return Text(
+      errorMessage == '' ? '' : 'Hmm? $errorMessage',
+      style: const TextStyle(
+        color: Colors.white,
+        decoration: TextDecoration.underline,
+      ),
+    );
   }
 
   Widget _submitButton() {
@@ -95,8 +101,17 @@ class _LoginPageState extends State<LoginPage> {
         foregroundColor: Colors.white,
         backgroundColor: Colors.red,
       ),
-      onPressed:
-          isLogin ? signInWithEmailAndPassword : createUserWithEmailAndPassword,
+      onPressed: isLogin
+          ? signInWithEmailAndPassword
+          : () {
+              if (_controllerPassword.text == _controllerConfirmPassword.text) {
+                createUserWithEmailAndPassword();
+              } else {
+                setState(() {
+                  errorMessage = 'Passwords do not match';
+                });
+              }
+            },
       child: Text(isLogin ? 'LOGIN' : 'REGISTER'),
     );
   }
