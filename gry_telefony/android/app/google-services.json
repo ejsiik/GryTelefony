@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "180847693384",
+    "project_id": "grytelefony-ejsiik",
+    "storage_bucket": "grytelefony-ejsiik.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:180847693384:android:3f7f522af10667a2de127d",
+        "android_client_info": {
+          "package_name": "com.example.gry_telefony"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "180847693384-ljr4pc2marc4o2r7dqrqrqtu9hii1ole.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7y-KlKagbzp6v8AYORKoWytUi3Y-_xfA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "180847693384-ljr4pc2marc4o2r7dqrqrqtu9hii1ole.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
