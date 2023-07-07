@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'auth.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({Key? key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -15,6 +15,8 @@ class _LoginPageState extends State<LoginPage> {
 
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
+  final TextEditingController _controllerConfirmPassword =
+      TextEditingController();
 
   Future<void> signInWithEmailAndPassword() async {
     try {
@@ -45,56 +47,116 @@ class _LoginPageState extends State<LoginPage> {
   Widget _entryField(
     String title,
     TextEditingController controller,
+    IconData prefixIcon,
+    bool isPassword,
   ) {
-    return TextField(
-      controller: controller,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: TextField(
+        controller: controller,
+        style: const TextStyle(color: Colors.white),
+        obscureText: isPassword,
+        decoration: InputDecoration(
+          hintText: title,
+          hintStyle: const TextStyle(color: Colors.grey),
+          prefixIcon: Icon(prefixIcon, color: Colors.grey),
+        ),
+      ),
+    );
+  }
+
+  Widget _confirmPasswordField() {
+    if (isLogin) {
+      return const SizedBox(height: 10);
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: TextField(
+        controller: _controllerConfirmPassword,
+        style: const TextStyle(color: Colors.white),
+        obscureText: true,
+        decoration: const InputDecoration(
+          hintText: 'Confirm Password',
+          hintStyle: TextStyle(color: Colors.grey),
+          prefixIcon: Icon(Icons.lock, color: Colors.grey),
+        ),
+      ),
     );
   }
 
   Widget _errorMessage() {
-    return Text(errorMessage == '' ? '' : 'Hmm ? $errorMessage');
+    return Text(errorMessage == '' ? '' : 'Hmm? $errorMessage');
   }
 
   Widget _submitButton() {
     return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.red,
+      ),
       onPressed:
           isLogin ? signInWithEmailAndPassword : createUserWithEmailAndPassword,
-      child: Text(isLogin ? 'Login' : 'Register'),
+      child: Text(isLogin ? 'LOGIN' : 'REGISTER'),
     );
   }
 
   Widget _loginOrRegisterButton() {
-    return TextButton(
-      onPressed: () {
+    return GestureDetector(
+      onTap: () {
         setState(() {
           isLogin = !isLogin;
         });
       },
-      child: Text(isLogin ? 'Register instead' : 'Login instead'),
+      child: Text(
+        isLogin
+            ? 'Not a member yet? Register'
+            : 'Already have an account? Login',
+        style: const TextStyle(
+          color: Colors.white,
+          decoration: TextDecoration.underline,
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('title'),
-      ),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _entryField('email', _controllerEmail),
-            _entryField('password', _controllerPassword),
-            _errorMessage(),
-            _submitButton(),
-            _loginOrRegisterButton(),
-          ],
-        ),
-      ),
-    );
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          backgroundColor: Colors.black,
+          body: Container(
+            color: Colors.black,
+            child: SingleChildScrollView(
+              reverse: true,
+              child: Column(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      image: DecorationImage(
+                        image: AssetImage('logo/duze.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  _entryField('E-mail', _controllerEmail, Icons.person, false),
+                  const SizedBox(height: 10),
+                  _entryField(
+                      'Password', _controllerPassword, Icons.lock, true),
+                  _confirmPasswordField(),
+                  _errorMessage(),
+                  const SizedBox(height: 40),
+                  _submitButton(),
+                  const SizedBox(height: 20),
+                  _loginOrRegisterButton(),
+                ],
+              ),
+            ),
+          ),
+        ));
   }
 }
