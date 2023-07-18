@@ -1,7 +1,7 @@
-import 'package:gry_telefony/auth.dart';
-import 'package:gry_telefony/login_register.dart';
 import 'package:flutter/material.dart';
-import 'package:gry_telefony/verify_email_page.dart';
+import 'login/auth.dart';
+import 'login/login_register.dart';
+import 'login/verify_email_page.dart';
 
 class WidgetTree extends StatefulWidget {
   const WidgetTree({super.key});
