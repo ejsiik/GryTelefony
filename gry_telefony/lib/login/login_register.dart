@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'auth.dart';
 import 'forgot_password_page.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key});
@@ -38,6 +39,49 @@ class _LoginPageState extends State<LoginPage> {
         email: _controllerEmail.text.trim(),
         password: _controllerPassword.text.trim(),
       );
+      // Get the currently logged-in user
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        // Get the user ID
+        String userId = currentUser.uid;
+
+        // Create a reference to the "users" node in the Realtime Database
+        DatabaseReference usersRef =
+            FirebaseDatabase.instance.ref().child('users');
+
+        // Create a new record for the user
+        await usersRef.child(userId).set({
+          'email': _controllerEmail.text.trim(),
+          'Id': userId,
+          'name': _controllerEmail.text.trim(),
+          'coupons': {
+            'coupon1': {
+              'isEnabled': false,
+              'couponValue': 0,
+            },
+            'coupon2': {
+              'isEnabled': false,
+              'couponValue': 0,
+            },
+            'coupon3': {
+              'isEnabled': false,
+              'couponValue': 0,
+            },
+            'coupon4': {
+              'isEnabled': false,
+              'couponValue': 0,
+            },
+            'coupon5': {
+              'isEnabled': false,
+              'couponValue': 0,
+            },
+            'coupon6': {
+              'isEnabled': false,
+              'couponValue': 0,
+            },
+          },
+        });
+      }
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
