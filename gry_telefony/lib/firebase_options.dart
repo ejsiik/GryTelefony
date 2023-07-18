@@ -63,7 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '180847693384',
     projectId: 'grytelefony-ejsiik',
     storageBucket: 'grytelefony-ejsiik.appspot.com',
-    iosClientId: '180847693384-3rumgig5ustm7g1ioqa2iqe5h4rp5e58.apps.googleusercontent.com',
+    iosClientId:
+        '180847693384-3rumgig5ustm7g1ioqa2iqe5h4rp5e58.apps.googleusercontent.com',
     iosBundleId: 'com.example.gryTelefony',
   );
 }
