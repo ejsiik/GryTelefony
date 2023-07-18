@@ -1,9 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login/auth.dart';
+import 'dart:async';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool showWelcomeBanner = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Timer do ukrycia banera po 14 dniach
+    Timer(const Duration(days: 14), () {
+      setState(() {
+        showWelcomeBanner = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,46 +51,104 @@ class HomePage extends StatelessWidget {
         color: Colors.black,
         child: Stack(
           children: [
-            Positioned(
-              top: 10,
-              right: 10,
-              child: Image.asset(
-                'logo/male.png',
-                width: 50,
-                height: 50,
-              ),
-            ),
             SingleChildScrollView(
               child: Column(
                 children: [
                   UserNameWidget(userName: user?.email ?? ''),
                   const SizedBox(height: 20),
-                  const Text(
+                  if (showWelcomeBanner) const WelcomeBanner(),
+                  /*const Text(
                     'Kupony:',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
-                  ),
+                  ),*/
                   const SizedBox(height: 10),
                   GridView.count(
-                    crossAxisCount: 2,
+                    crossAxisCount: 3,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     children: List.generate(6, (index) {
                       return CouponCard(
-                        number: index + 1,
-                        title: 'Screen Glass Coupon ${index + 1}',
-                        description: 'Limited time offer!',
-                        discount: (index == 5) ? 'Free' : '',
+                        isFree: index == 5,
                       );
                     }),
                   ),
+                  const SizedBox(height: 20),
+                  const GlassPurchaseButton(),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class WelcomeBanner extends StatelessWidget {
+  const WelcomeBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      color: Colors.yellow,
+      child: Column(
+        children: [
+          const Text(
+            'Przyznano 10% zniżki na akcesoria!\nKupon ważny przez 2 tygodnie od założenia konta.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              // onPressed
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            ),
+            child: const Text(
+              'Wykorzystaj',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class GlassPurchaseButton extends StatelessWidget {
+  const GlassPurchaseButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        // onPressed
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      ),
+      child: const Text(
+        'Zakup szkło',
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 16,
         ),
       ),
     );
@@ -86,7 +163,7 @@ class UserNameWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'Welcome, $userName!',
+      'Witaj, $userName!',
       style: const TextStyle(
         color: Colors.white,
         fontSize: 24,
@@ -97,18 +174,9 @@ class UserNameWidget extends StatelessWidget {
 }
 
 class CouponCard extends StatelessWidget {
-  const CouponCard({
-    Key? key,
-    required this.number,
-    required this.title,
-    required this.description,
-    required this.discount,
-  }) : super(key: key);
+  const CouponCard({Key? key, required this.isFree}) : super(key: key);
 
-  final int number;
-  final String title;
-  final String description;
-  final String discount;
+  final bool isFree;
 
   @override
   Widget build(BuildContext context) {
@@ -116,65 +184,41 @@ class CouponCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.red,
-        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.red, width: 2),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Align(
-            alignment: Alignment.topRight,
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.rectangle,
+      child: isFree
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Darmowe',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    'Szkło!',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
-              padding: const EdgeInsets.all(2),
-              child: const Text(
-                'Świat Gier i Telefonów',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
+            )
+          : ClipOval(
+              child: Image.asset(
+                'logo/male.png',
+                width: 60,
+                height: 60,
               ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Coupon $number',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 5),
-          Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-            ),
-          ),
-          const SizedBox(height: 5),
-          Text(
-            description,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-            ),
-          ),
-          const SizedBox(height: 5),
-          Text(
-            'Discount: $discount',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
