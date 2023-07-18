@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'auth.dart';
+import 'forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key});
@@ -21,8 +22,8 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> signInWithEmailAndPassword() async {
     try {
       await Auth().signInWithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
+        email: _controllerEmail.text.trim(),
+        password: _controllerPassword.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -34,8 +35,8 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> createUserWithEmailAndPassword() async {
     try {
       await Auth().createUserWithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
+        email: _controllerEmail.text.trim(),
+        password: _controllerPassword.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -111,6 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                   errorMessage = 'Passwords do not match';
                 });
               }
+              FocusScope.of(context).unfocus();
             },
       child: Text(isLogin ? 'LOGIN' : 'REGISTER'),
     );
@@ -125,9 +127,32 @@ class _LoginPageState extends State<LoginPage> {
       },
       child: Text(
         isLogin
-            ? 'Not a member yet? Register'
+            ? 'Not a member? Register now'
             : 'Already have an account? Login',
         style: const TextStyle(
+          color: Colors.white,
+          decoration: TextDecoration.underline,
+        ),
+      ),
+    );
+  }
+
+  Widget _forgotPassword() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return const ForgotPasswordPage();
+            },
+          ),
+        );
+        FocusScope.of(context).unfocus();
+      },
+      child: const Text(
+        'Forgot Password?',
+        style: TextStyle(
           color: Colors.white,
           decoration: TextDecoration.underline,
         ),
@@ -163,8 +188,9 @@ class _LoginPageState extends State<LoginPage> {
                   _entryField(
                       'Password', _controllerPassword, Icons.lock, true),
                   _confirmPasswordField(),
+                  _forgotPassword(),
+                  const SizedBox(height: 30),
                   _errorMessage(),
-                  const SizedBox(height: 40),
                   _submitButton(),
                   const SizedBox(height: 20),
                   _loginOrRegisterButton(),

@@ -36,7 +36,7 @@ class HomePage extends StatelessWidget {
               top: 10,
               right: 10,
               child: Image.asset(
-                'male.png',
+                'logo/male.png',
                 width: 50,
                 height: 50,
               ),
