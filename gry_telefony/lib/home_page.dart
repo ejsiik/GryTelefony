@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login/auth.dart';
@@ -141,13 +142,13 @@ class GlassPurchaseButton extends StatelessWidget {
         // onPressed
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.red,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       ),
       child: const Text(
         'Zakup szkło',
         style: TextStyle(
-          color: Colors.black,
           fontSize: 16,
         ),
       ),
@@ -155,20 +156,95 @@ class GlassPurchaseButton extends StatelessWidget {
   }
 }
 
-class UserNameWidget extends StatelessWidget {
+class UserNameWidget extends StatefulWidget {
+  final String userName;
+
   const UserNameWidget({Key? key, required this.userName}) : super(key: key);
 
-  final String userName;
+  @override
+  _UserNameWidgetState createState() => _UserNameWidgetState();
+}
+
+class _UserNameWidgetState extends State<UserNameWidget> {
+  String _displayName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _displayName = widget.userName;
+  }
+
+  Future<void> _changeUserName() async {
+    String newDisplayName = '';
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Enter Your New Name'),
+          content: TextField(
+            onChanged: (value) {
+              newDisplayName = value;
+            },
+            decoration: const InputDecoration(hintText: 'New Name'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (newDisplayName.trim().isNotEmpty) {
+                  // Perform the name update here.
+                  String userId = Auth().currentUser?.uid ?? '';
+
+                  // Create a reference to the user node in the Realtime Database
+                  DatabaseReference userRef = FirebaseDatabase.instance
+                      .ref()
+                      .child('users')
+                      .child(userId);
+
+                  // Update the "name" field with the new display name
+                  await userRef.update({
+                    'name': newDisplayName,
+                  });
+
+                  setState(() {
+                    _displayName = newDisplayName;
+                  });
+
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      'Witaj, $userName!',
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Witaj, $_displayName!',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        IconButton(
+            iconSize: 18.0,
+            onPressed: _changeUserName,
+            icon: const Icon(Icons.edit, color: Colors.white)),
+      ],
     );
   }
 }
