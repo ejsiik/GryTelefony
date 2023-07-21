@@ -56,27 +56,27 @@ class _LoginPageState extends State<LoginPage> {
           'name': _controllerEmail.text.trim(),
           'coupons': {
             'coupon1': {
-              'isFree': false,
+              'wasUsed': false,
               'couponValue': 0,
             },
             'coupon2': {
-              'isFree': false,
+              'wasUsed': true,
               'couponValue': 0,
             },
             'coupon3': {
-              'isFree': false,
+              'wasUsed': false,
               'couponValue': 0,
             },
             'coupon4': {
-              'isFree': false,
+              'wasUsed': false,
               'couponValue': 0,
             },
             'coupon5': {
-              'isFree': false,
+              'wasUsed': false,
               'couponValue': 0,
             },
             'coupon6': {
-              'isFree': false,
+              'wasUsed': false,
               'couponValue': 0,
             },
           },
