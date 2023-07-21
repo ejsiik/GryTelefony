@@ -54,6 +54,7 @@ class _LoginPageState extends State<LoginPage> {
           'email': _controllerEmail.text.trim(),
           'Id': userId,
           'name': _controllerEmail.text.trim(),
+          'createdAt': DateTime.now().toUtc().toString(),
           'coupons': {
             'coupon1': {
               'wasUsed': false,

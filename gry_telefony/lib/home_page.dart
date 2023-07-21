@@ -17,12 +17,23 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Timer do ukrycia banera po 14 dniach
-    Timer(const Duration(days: 14), () {
+    checkUserCreationDate();
+  }
+
+  Future<void> checkUserCreationDate() async {
+    final User? user = Auth().currentUser;
+
+    if (user != null) {
+      final firebaseCreationDate = DateTime.fromMillisecondsSinceEpoch(
+          user.metadata.creationTime!.millisecondsSinceEpoch);
+      final currentDate = DateTime.now();
+      final daysDifference =
+          currentDate.difference(firebaseCreationDate).inDays;
+
       setState(() {
-        showWelcomeBanner = false;
+        showWelcomeBanner = daysDifference <= 14;
       });
-    });
+    }
   }
 
   @override
@@ -142,7 +153,34 @@ class WelcomeBanner extends StatelessWidget {
           const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {
-              // onPressed
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title:
+                        const Text('Czy jesteś pewien, że chcesz użyć kuponu?'),
+                    content: const Text(
+                        'Nie zamykaj tego okna przed okazaniem go sprzedawcy'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Anuluj'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        child: const Text('Użyj kuponu'),
+                      ),
+                    ],
+                  );
+                },
+              );
             },
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
@@ -213,19 +251,19 @@ class _UserNameWidgetState extends State<UserNameWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Enter Your New Name'),
+          title: const Text('Wprowadź swoje imię'),
           content: TextField(
             onChanged: (value) {
               newDisplayName = value;
             },
-            decoration: const InputDecoration(hintText: 'New Name'),
+            decoration: const InputDecoration(hintText: 'Imię'),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancel'),
+              child: const Text('Anuluj'),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -251,7 +289,10 @@ class _UserNameWidgetState extends State<UserNameWidget> {
                   Navigator.of(context).pop();
                 }
               },
-              child: const Text('Save'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              child: const Text('Zapisz'),
             ),
           ],
         );
