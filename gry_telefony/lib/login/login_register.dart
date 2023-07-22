@@ -64,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
               'couponValue': 0,
             },
             'coupon2': {
-              'wasUsed': true,
+              'wasUsed': false,
               'couponValue': 0,
             },
             'coupon3': {

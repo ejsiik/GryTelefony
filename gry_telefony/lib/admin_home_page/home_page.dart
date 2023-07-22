@@ -53,12 +53,54 @@ class _AdminHomePageState extends State<AdminHomePage> {
         foregroundColor: Colors.white,
         backgroundColor: Colors.red,
       ),
-      onPressed: () {
+      onPressed: () async {
         if (_controllerUserID.text.isNotEmpty &&
             _controllerValue.text.isNotEmpty) {
+          final DatabaseReference usersRef =
+              FirebaseDatabase.instance.ref().child('users');
+
+          String userId = _controllerUserID.text.trim();
+          DatabaseEvent event = await usersRef.child(userId).once();
+          DataSnapshot snapshot = event.snapshot;
+
+          if (snapshot.value != null) {
+            int couponValue = int.tryParse(_controllerValue.text.trim()) ?? 0;
+            DataSnapshot couponsSnapshot = snapshot.child('coupons');
+            Map<dynamic, dynamic> couponsData =
+                couponsSnapshot.value as Map<dynamic, dynamic>;
+            bool foundUnusedCoupon = false;
+            String unusedCouponKey = '';
+
+            couponsData.forEach((key, value) {
+              if (value['wasUsed'] == false && !foundUnusedCoupon) {
+                foundUnusedCoupon = true;
+                unusedCouponKey = key;
+              }
+            });
+
+            if (foundUnusedCoupon) {
+              await usersRef
+                  .child(userId)
+                  .child('coupons')
+                  .child(unusedCouponKey)
+                  .update({
+                'wasUsed': true,
+                'couponValue': couponValue,
+              });
+            } else {
+              setState(() {
+                errorMessage = 'No available unused coupons for this user.';
+              });
+            }
+          } else {
+            setState(() {
+              errorMessage =
+                  'User with the specified ID not found in the database.';
+            });
+          }
         } else {
           setState(() {
-            errorMessage = 'Passwords do not match';
+            errorMessage = 'Brak danych';
           });
         }
         FocusScope.of(context).unfocus();
