@@ -49,12 +49,15 @@ class _LoginPageState extends State<LoginPage> {
         DatabaseReference usersRef =
             FirebaseDatabase.instance.ref().child('users');
 
+        DateTime currentDate = DateTime.now().toUtc();
+
         // Create a new record for the user
         await usersRef.child(userId).set({
           'email': _controllerEmail.text.trim(),
           'Id': userId,
           'name': _controllerEmail.text.trim(),
-          'createdAt': DateTime.now().toUtc().toString(),
+          'createdAt': currentDate.toString(),
+          'couponUsed': false,
           'coupons': {
             'coupon1': {
               'wasUsed': false,

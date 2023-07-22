@@ -12,7 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool showWelcomeBanner = true;
+  bool showWelcomeBanner = false;
 
   @override
   void initState() {
@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> checkUserCreationDate() async {
-    final User? user = Auth().currentUser;
+    final User? user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
       final firebaseCreationDate = DateTime.fromMillisecondsSinceEpoch(
@@ -30,9 +30,33 @@ class _HomePageState extends State<HomePage> {
       final daysDifference =
           currentDate.difference(firebaseCreationDate).inDays;
 
-      setState(() {
-        showWelcomeBanner = daysDifference <= 14;
-      });
+      if (daysDifference <= 14) {
+        // If the user's account is created within 14 days, check the coupon status
+        DatabaseReference usersRef =
+            FirebaseDatabase.instance.ref().child('users');
+
+        // Use `DatabaseEvent` type to fetch the snapshot
+        DatabaseEvent snapshotEvent =
+            await usersRef.child(user.uid).child('couponUsed').once();
+
+        // Access the DataSnapshot from the DatabaseEvent
+        DataSnapshot snapshot = snapshotEvent.snapshot;
+
+        // Check if the snapshot contains a valid boolean value
+        if (snapshot.value is bool && snapshot.value == false) {
+          // If the couponUsed is false, set the showWelcomeBanner to true
+          setState(() {
+            showWelcomeBanner = true;
+          });
+        }
+
+        if (snapshot.value is bool && snapshot.value == true) {
+          // If the couponUsed is true, hide the welcome banner
+          setState(() {
+            showWelcomeBanner = false;
+          });
+        }
+      }
     }
   }
 
@@ -169,7 +193,18 @@ class WelcomeBanner extends StatelessWidget {
                         child: const Text('Anuluj'),
                       ),
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          // Get the current user
+                          User? user = FirebaseAuth.instance.currentUser;
+                          if (user != null) {
+                            // Update the 'couponUsed' field to true in the database
+                            DatabaseReference usersRef =
+                                FirebaseDatabase.instance.ref().child('users');
+                            await usersRef
+                                .child(user.uid)
+                                .child('couponUsed')
+                                .set(true);
+                          }
                           Navigator.of(context).pop();
                         },
                         style: ElevatedButton.styleFrom(
