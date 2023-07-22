@@ -5,7 +5,7 @@ import 'forgot_password_page.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
