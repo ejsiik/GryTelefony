@@ -120,7 +120,7 @@ class _HomePageState extends State<HomePage> {
                     }),
                   ),
                   const SizedBox(height: 20),
-                  const GlassPurchaseButton(),
+                  GlassPurchaseButton(user: user),
                 ],
               ),
             ),
