@@ -1,6 +1,8 @@
+// ignore_for_file: nullable_type_in_catch_clause
+
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-
+import 'package:barcode_scan2/barcode_scan2.dart' as scanner;
 import '../login/auth.dart';
 
 class AdminHomePage extends StatefulWidget {
@@ -103,6 +105,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
             errorMessage = 'Brak danych';
           });
         }
+        // ignore: use_build_context_synchronously
         FocusScope.of(context).unfocus();
       },
       child: const Text('Zarejestruj sprzedaż'),
@@ -111,6 +114,33 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
   void signOut() async {
     await Auth().signOut();
+  }
+
+  Future<void> _scanQRCode() async {
+    try {
+      var result = await scanner.BarcodeScanner.scan();
+      if (!mounted) {
+        return; // Handle the case when the widget is removed from the tree during the scan process.
+      }
+      setState(() {
+        _controllerUserID.text = result.rawContent;
+      });
+    } catch (e) {
+      setState(() {
+        errorMessage = 'Błąd przy skanowaniu';
+      });
+    }
+  }
+
+  Widget _scanQRButton() {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.white,
+        backgroundColor: Colors.red,
+      ),
+      onPressed: _scanQRCode,
+      child: const Text('Scan QR Code'),
+    );
   }
 
   @override
@@ -149,6 +179,13 @@ class _AdminHomePageState extends State<AdminHomePage> {
                     ),
                   ),
                   const SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _scanQRButton(),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
                   _entryField('User ID', _controllerUserID, Icons.person),
                   const SizedBox(height: 10),
                   _entryField('Cena', _controllerValue, Icons.money),
