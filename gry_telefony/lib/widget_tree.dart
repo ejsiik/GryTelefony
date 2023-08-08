@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:gry_telefony/user_home_page/phone_data.dart';
 import 'admin_home_page/home_page.dart';
 import 'login/login_register.dart';
 import 'login/verify_email_page.dart';
@@ -27,7 +28,8 @@ class _WidgetTreeState extends State<WidgetTree> {
             if (userEmailAddress == "daw.wydra@gmail.com") {
               return const AdminHomePage();
             } else {
-              return const VerifyEmailPage();
+              //return const VerifyEmailPage();
+              return PhoneListScreen();
             }
           } else {
             return const LoginPage();
