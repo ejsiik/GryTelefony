@@ -14,6 +14,7 @@ class AdminHomePage extends StatefulWidget {
 
 class _AdminHomePageState extends State<AdminHomePage> {
   String? errorMessage = '';
+  bool _welcomeBanner = false;
 
   final TextEditingController _controllerUserID = TextEditingController();
   final TextEditingController _controllerValue = TextEditingController();
@@ -26,15 +27,49 @@ class _AdminHomePageState extends State<AdminHomePage> {
     IconData prefixIcon,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: TextField(
-        controller: controller,
-        style: const TextStyle(color: Colors.white),
-        decoration: InputDecoration(
-          hintText: title,
-          hintStyle: const TextStyle(color: Colors.grey),
-          prefixIcon: Icon(prefixIcon, color: Colors.grey),
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (title == 'Cena')
+            Row(
+              children: [
+                Checkbox(
+                  value: _welcomeBanner,
+                  onChanged: (value) {
+                    setState(() {
+                      _welcomeBanner = value ?? false;
+                      if (_welcomeBanner) {
+                        controller.clear();
+                      }
+                    });
+                  },
+                  activeColor: Colors.grey, // Checkbox color when selected
+                  checkColor: Colors.black, // Checkmark color when selected
+                  fillColor: MaterialStateColor.resolveWith((states) {
+                    if (states.contains(MaterialState.selected)) {
+                      return Colors.grey; // Checkbox color when unselected
+                    }
+                    return Colors.grey;
+                  }),
+                ),
+                const Text(
+                  'Kupon powitalny',
+                  style: TextStyle(color: Colors.grey), // Text color
+                ),
+              ],
+            ),
+          TextField(
+            controller: controller,
+            enabled: title != 'Cena' || !_welcomeBanner,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: title,
+              hintStyle: const TextStyle(color: Colors.grey),
+              prefixIcon: Icon(prefixIcon, color: Colors.grey),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -56,8 +91,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
         backgroundColor: Colors.red,
       ),
       onPressed: () async {
-        if (_controllerUserID.text.isNotEmpty &&
-            _controllerValue.text.isNotEmpty) {
+        if (_controllerUserID.text.isNotEmpty) {
           final DatabaseReference usersRef =
               FirebaseDatabase.instance.ref().child('users');
 
@@ -66,43 +100,77 @@ class _AdminHomePageState extends State<AdminHomePage> {
           DataSnapshot snapshot = event.snapshot;
 
           if (snapshot.value != null) {
-            int couponValue = int.tryParse(_controllerValue.text.trim()) ?? 0;
-            DataSnapshot couponsSnapshot = snapshot.child('coupons');
-            Map<dynamic, dynamic> couponsData =
-                couponsSnapshot.value as Map<dynamic, dynamic>;
-            bool foundUnusedCoupon = false;
-            String unusedCouponKey = '';
-
-            couponsData.forEach((key, value) {
-              if (value['wasUsed'] == false && !foundUnusedCoupon) {
-                foundUnusedCoupon = true;
-                unusedCouponKey = key;
-              }
-            });
-
-            if (foundUnusedCoupon) {
-              await usersRef
-                  .child(userId)
-                  .child('coupons')
-                  .child(unusedCouponKey)
-                  .update({
-                'wasUsed': true,
-                'couponValue': couponValue,
-              });
+            if (_welcomeBanner) {
+              // Update the 'couponUsed' field to true in the database
+              await usersRef.child(userId).child('couponUsed').set(true);
             } else {
-              setState(() {
-                errorMessage = 'No available unused coupons for this user.';
-              });
+              if (_controllerValue.text.isNotEmpty) {
+                int couponValue =
+                    int.tryParse(_controllerValue.text.trim()) ?? 0;
+                DataSnapshot couponsSnapshot = snapshot.child('coupons');
+                Map<dynamic, dynamic> couponsData =
+                    couponsSnapshot.value as Map<dynamic, dynamic>;
+                bool foundUnusedCoupon = false;
+                String unusedCouponKey = '';
+
+                couponsData.forEach((key, value) {
+                  if (value['wasUsed'] == false && !foundUnusedCoupon) {
+                    foundUnusedCoupon = true;
+                    unusedCouponKey = key;
+                  }
+                });
+
+                if (foundUnusedCoupon) {
+                  await usersRef
+                      .child(userId)
+                      .child('coupons')
+                      .child(unusedCouponKey)
+                      .update({
+                    'wasUsed': true,
+                    'couponValue': couponValue,
+                  });
+
+                  // Check if five coupons are used
+                  int usedCouponsCount = 0;
+                  couponsData.forEach((key, value) {
+                    if (value['wasUsed'] == true) {
+                      usedCouponsCount++;
+                    }
+                  });
+
+                  if (usedCouponsCount >= 5) {
+                    // Set all coupons to false
+                    couponsData.forEach((key, value) {
+                      usersRef
+                          .child(userId)
+                          .child('coupons')
+                          .child(key)
+                          .update({'wasUsed': false});
+                    });
+
+                    setState(() {
+                      errorMessage = 'Zakupione szkło jest darmowe!';
+                    });
+                  }
+                } else {
+                  setState(() {
+                    errorMessage = 'Brak dostępnych kuponów';
+                  });
+                }
+              } else {
+                setState(() {
+                  errorMessage = 'Podaj cenę szkła';
+                });
+              }
             }
           } else {
             setState(() {
-              errorMessage =
-                  'User with the specified ID not found in the database.';
+              errorMessage = 'Nie znaleziono użytkownika';
             });
           }
         } else {
           setState(() {
-            errorMessage = 'Brak danych';
+            errorMessage = 'Podaj ID użytkownika';
           });
         }
         // ignore: use_build_context_synchronously

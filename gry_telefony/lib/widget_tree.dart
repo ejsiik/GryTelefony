@@ -28,8 +28,8 @@ class _WidgetTreeState extends State<WidgetTree> {
             if (userEmailAddress == "daw.wydra@gmail.com") {
               return const AdminHomePage();
             } else {
-              //return const VerifyEmailPage();
-              return PhoneListScreen();
+              return const VerifyEmailPage();
+              //return PhoneListScreen();
             }
           } else {
             return const LoginPage();
