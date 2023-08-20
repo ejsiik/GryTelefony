@@ -114,7 +114,10 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 String unusedCouponKey = '';
 
                 couponsData.forEach((key, value) {
-                  if (value['wasUsed'] == false && !foundUnusedCoupon) {
+                  int valueFromDatabase = value['couponValue'] ?? 0;
+                  if (value['wasUsed'] == false &&
+                      valueFromDatabase > 0 &&
+                      !foundUnusedCoupon) {
                     foundUnusedCoupon = true;
                     unusedCouponKey = key;
                   }
@@ -140,12 +143,15 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
                   if (usedCouponsCount >= 5) {
                     // Set all coupons to false
-                    couponsData.forEach((key, value) {
-                      usersRef
+                    couponsData.forEach((key, value) async {
+                      await usersRef
                           .child(userId)
                           .child('coupons')
                           .child(key)
-                          .update({'wasUsed': false});
+                          .update({
+                        'wasUsed': false,
+                        'couponValue': 0,
+                      });
                     });
 
                     setState(() {
