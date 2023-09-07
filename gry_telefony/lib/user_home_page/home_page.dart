@@ -58,12 +58,28 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool showWelcomeBanner = false;
   User? user;
+  late DatabaseReference?
+      couponUsedRef; // Reference to 'couponUsed' in Firebase
 
   @override
   void initState() {
     super.initState();
     user = Auth().currentUser;
     checkUserCreationDate();
+
+    // Listen to changes in 'couponUsed' in Firebase
+    couponUsedRef = FirebaseDatabase.instance
+        .ref()
+        .child('users')
+        .child(user!.uid)
+        .child('couponUsed');
+    couponUsedRef!.onValue.listen((event) {
+      if (event.snapshot.value is bool) {
+        setState(() {
+          showWelcomeBanner = event.snapshot.value == false;
+        });
+      }
+    });
   }
 
   Future<void> checkUserCreationDate() async {
@@ -78,6 +94,13 @@ class _HomePageState extends State<HomePage> {
 
   void signOut() async {
     await Auth().signOut();
+  }
+
+  @override
+  void dispose() {
+    // Dispose of the listener when the widget is disposed
+    couponUsedRef?.onValue.drain();
+    super.dispose();
   }
 
   @override

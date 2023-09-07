@@ -96,13 +96,24 @@ class _AdminHomePageState extends State<AdminHomePage> {
               FirebaseDatabase.instance.ref().child('users');
 
           String userId = _controllerUserID.text.trim();
-          DatabaseEvent event = await usersRef.child(userId).once();
+          DatabaseEvent event =
+              await usersRef.child(userId).child('couponUsed').once();
           DataSnapshot snapshot = event.snapshot;
 
+          bool couponUsed = snapshot.value as bool;
+
           if (snapshot.value != null) {
+            DatabaseEvent event =
+                await usersRef.child(userId).child('couponUsed').once();
+            DataSnapshot snapshot = event.snapshot;
+
             if (_welcomeBanner) {
+              if (couponUsed) {
+                errorMessage = "Kupon został już użyty";
+              }
               // Update the 'couponUsed' field to true in the database
               await usersRef.child(userId).child('couponUsed').set(true);
+              errorMessage = "Wykorzystano kupon powitalny";
             } else {
               if (_controllerValue.text.isNotEmpty) {
                 int couponValue =

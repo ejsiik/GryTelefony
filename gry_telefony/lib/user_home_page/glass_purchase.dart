@@ -48,7 +48,7 @@ class GlassPurchaseButton extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                         ),
-                        child: const Text('Close'),
+                        child: const Text('Zamknij'),
                       ),
                     ],
                   ),
