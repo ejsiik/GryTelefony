@@ -96,21 +96,17 @@ class _AdminHomePageState extends State<AdminHomePage> {
               FirebaseDatabase.instance.ref().child('users');
 
           String userId = _controllerUserID.text.trim();
-          DatabaseEvent event =
-              await usersRef.child(userId).child('couponUsed').once();
+          DatabaseEvent event = await usersRef.child(userId).once();
           DataSnapshot snapshot = event.snapshot;
 
-          bool couponUsed = snapshot.value as bool;
+          //bool couponUsed = snapshot.value as bool;
 
           if (snapshot.value != null) {
-            DatabaseEvent event =
-                await usersRef.child(userId).child('couponUsed').once();
-            DataSnapshot snapshot = event.snapshot;
+            //DatabaseEvent event =
+            //await usersRef.child(userId).child('couponUsed').once();
+            //DataSnapshot snapshot = event.snapshot;
 
             if (_welcomeBanner) {
-              if (couponUsed) {
-                errorMessage = "Kupon został już użyty";
-              }
               // Update the 'couponUsed' field to true in the database
               await usersRef.child(userId).child('couponUsed').set(true);
               errorMessage = "Wykorzystano kupon powitalny";
@@ -118,60 +114,99 @@ class _AdminHomePageState extends State<AdminHomePage> {
               if (_controllerValue.text.isNotEmpty) {
                 int couponValue =
                     int.tryParse(_controllerValue.text.trim()) ?? 0;
-                DataSnapshot couponsSnapshot = snapshot.child('coupons');
-                Map<dynamic, dynamic> couponsData =
-                    couponsSnapshot.value as Map<dynamic, dynamic>;
-                bool foundUnusedCoupon = false;
-                String unusedCouponKey = '';
 
-                couponsData.forEach((key, value) {
-                  int valueFromDatabase = value['couponValue'] ?? 0;
-                  if (value['wasUsed'] == false &&
-                      valueFromDatabase > 0 &&
-                      !foundUnusedCoupon) {
-                    foundUnusedCoupon = true;
-                    unusedCouponKey = key;
-                  }
-                });
+                final DatabaseReference usersRef =
+                    FirebaseDatabase.instance.ref().child('users');
 
-                if (foundUnusedCoupon) {
-                  await usersRef
-                      .child(userId)
-                      .child('coupons')
-                      .child(unusedCouponKey)
-                      .update({
-                    'wasUsed': true,
-                    'couponValue': couponValue,
-                  });
+                String userId = _controllerUserID.text.trim();
+                DatabaseEvent event = await usersRef.child(userId).once();
 
-                  // Check if five coupons are used
-                  int usedCouponsCount = 0;
-                  couponsData.forEach((key, value) {
-                    if (value['wasUsed'] == true) {
-                      usedCouponsCount++;
-                    }
-                  });
+                if (event.snapshot.value != null) {
+                  // Retrieve the user's data from Firebase
+                  Map<dynamic, dynamic>? userData =
+                      event.snapshot.value as Map<dynamic, dynamic>?;
 
-                  if (usedCouponsCount >= 5) {
-                    // Set all coupons to false
-                    couponsData.forEach((key, value) async {
-                      await usersRef
-                          .child(userId)
-                          .child('coupons')
-                          .child(key)
-                          .update({
-                        'wasUsed': false,
-                        'couponValue': 0,
+                  if (userData != null) {
+                    // Retrieve the 'coupons' map from the user's data with a null check
+                    Map<dynamic, dynamic>? couponsData =
+                        userData['coupons'] as Map<dynamic, dynamic>?;
+
+                    if (couponsData != null) {
+                      // Create a list of coupon keys sorted in ascending order
+                      List couponKeys = couponsData.keys.toList();
+                      couponKeys.sort();
+
+                      bool foundUnusedCoupon = false;
+                      String? unusedCouponKey;
+
+                      // Iterate through the sorted keys
+                      for (String key in couponKeys) {
+                        if (couponsData[key]['wasUsed'] == false) {
+                          foundUnusedCoupon = true;
+                          unusedCouponKey = key;
+                          break; // Exit the loop as soon as an unused coupon is found
+                        }
+                      }
+
+                      if (foundUnusedCoupon && unusedCouponKey != null) {
+                        // Update the specific coupon to mark it as used
+                        await usersRef
+                            .child(userId)
+                            .child('coupons')
+                            .child(unusedCouponKey)
+                            .update({
+                          'wasUsed': true,
+                          'couponValue': couponValue,
+                        });
+
+                        // Check if five coupons are used
+                        int usedCouponsCount = 0;
+                        couponsData.forEach((key, value) {
+                          if (value['wasUsed'] == true) {
+                            usedCouponsCount++;
+                          }
+                        });
+
+                        if (usedCouponsCount >= 5) {
+                          // Set all coupons to false
+                          couponsData.forEach((key, value) async {
+                            await usersRef
+                                .child(userId)
+                                .child('coupons')
+                                .child(key)
+                                .update({
+                              'wasUsed': false,
+                              'couponValue': 0,
+                            });
+                          });
+
+                          setState(() {
+                            errorMessage = 'Zakupione szkło jest darmowe!';
+                          });
+                        } else {
+                          setState(() {
+                            errorMessage = 'Kupon przyjęty';
+                          });
+                        }
+                      } else {
+                        setState(() {
+                          errorMessage = 'Brak dostępnych kuponów';
+                        });
+                      }
+                    } else {
+                      setState(() {
+                        errorMessage = 'Brak dostępnych kuponów';
                       });
-                    });
-
+                    }
+                  } else {
                     setState(() {
-                      errorMessage = 'Zakupione szkło jest darmowe!';
+                      errorMessage =
+                          'Brak danych użytkownika'; // Handle the case where user data is null
                     });
                   }
                 } else {
                   setState(() {
-                    errorMessage = 'Brak dostępnych kuponów';
+                    errorMessage = 'Podaj ID użytkownika';
                   });
                 }
               } else {
@@ -180,10 +215,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 });
               }
             }
-          } else {
-            setState(() {
-              errorMessage = 'Nie znaleziono użytkownika';
-            });
           }
         } else {
           setState(() {
