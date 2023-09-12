@@ -83,7 +83,7 @@ class WelcomeBanner extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             ),
             child: const Text(
-              'Zakup szkło',
+              'Wykorzystaj kupon',
               style: TextStyle(
                 fontSize: 16,
               ),

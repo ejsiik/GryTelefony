@@ -68,6 +68,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
               hintStyle: const TextStyle(color: Colors.grey),
               prefixIcon: Icon(prefixIcon, color: Colors.grey),
             ),
+            keyboardType:
+                title == 'Cena' ? TextInputType.number : TextInputType.text,
           ),
         ],
       ),
@@ -99,13 +101,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
           DatabaseEvent event = await usersRef.child(userId).once();
           DataSnapshot snapshot = event.snapshot;
 
-          //bool couponUsed = snapshot.value as bool;
-
           if (snapshot.value != null) {
-            //DatabaseEvent event =
-            //await usersRef.child(userId).child('couponUsed').once();
-            //DataSnapshot snapshot = event.snapshot;
-
             if (_welcomeBanner) {
               // Update the 'couponUsed' field to true in the database
               await usersRef.child(userId).child('couponUsed').set(true);
@@ -168,6 +164,15 @@ class _AdminHomePageState extends State<AdminHomePage> {
                         });
 
                         if (usedCouponsCount >= 5) {
+                          double totalCouponValue = 0;
+
+                          couponsData.forEach((key, value) {
+                            if (value['wasUsed'] == true) {
+                              totalCouponValue += (value['couponValue'] as int);
+                            }
+                          });
+                          // Check for the Average value of coupons
+                          double meanCouponValue = totalCouponValue / 5;
                           // Set all coupons to false
                           couponsData.forEach((key, value) async {
                             await usersRef
@@ -181,7 +186,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
                           });
 
                           setState(() {
-                            errorMessage = 'Zakupione szkło jest darmowe!';
+                            errorMessage =
+                                'Zakupione szkło jest darmowe! Średnia wartość: $meanCouponValue';
                           });
                         } else {
                           setState(() {
