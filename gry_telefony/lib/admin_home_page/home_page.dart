@@ -206,8 +206,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                     }
                   } else {
                     setState(() {
-                      errorMessage =
-                          'Brak danych użytkownika'; // Handle the case where user data is null
+                      errorMessage = 'Brak danych użytkownika';
                     });
                   }
                 } else {

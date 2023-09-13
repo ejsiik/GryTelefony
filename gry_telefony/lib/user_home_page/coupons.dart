@@ -69,10 +69,10 @@ class CouponCard extends StatelessWidget {
               ),
             )
           else if (isFree)
-            const Center(
+            Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: const [
                   Text(
                     'Darmowe',
                     style: TextStyle(
