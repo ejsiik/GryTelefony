@@ -50,62 +50,71 @@ class CouponCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.red, width: 2),
-      ),
-      child: Stack(
-        alignment: Alignment.center,
+      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+      child: Column(
         children: [
-          if (wasUsed)
-            ClipOval(
-              child: Image.asset(
-                'logo/male.png',
-                width: 60,
-                height: 60,
-              ),
-            )
-          else if (isFree)
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+          Container(
+            width: 100, 
+            height: 100, 
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.red, width: 2),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (wasUsed)
+                  ClipOval(
+                    child: Image.asset(
+                      'logo/logo.png',
+                      width: 80,
+                      height: 80,
+                    ),
+                  ),
+                if (isFree)
+                  const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Darmowe',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          'Szkło!',
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (wasUsed)
                   Text(
-                    'Darmowe',
-                    style: TextStyle(
+                    '$couponValue',
+                    style: const TextStyle(
                       color: Colors.red,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 5),
-                  Text(
-                    'Szkło!',
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          else
-            const SizedBox(), // Empty widget to show nothing when coupon is not used
-          if (wasUsed)
-            Positioned(
-              bottom: 0,
-              child: Text(
-                '$couponValue',
-                style: const TextStyle(
-                  color: Colors.red,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              ],
             ),
+          ),
         ],
       ),
     );
