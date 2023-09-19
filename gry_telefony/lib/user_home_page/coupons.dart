@@ -54,8 +54,8 @@ class CouponCard extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            width: 100, 
-            height: 100, 
+            width: 80,
+            height: 80,
             decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
@@ -68,8 +68,8 @@ class CouponCard extends StatelessWidget {
                   ClipOval(
                     child: Image.asset(
                       'logo/logo.png',
-                      width: 80,
-                      height: 80,
+                      width: 60,
+                      height: 60,
                     ),
                   ),
                 if (isFree)
@@ -108,7 +108,7 @@ class CouponCard extends StatelessWidget {
                     '$couponValue',
                     style: const TextStyle(
                       color: Colors.red,
-                      fontSize: 16,
+                      fontSize: 13,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
