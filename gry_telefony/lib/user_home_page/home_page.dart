@@ -130,7 +130,27 @@ class _HomePageState extends State<HomePage> {
                   UserNameWidget(user: user),
                   const SizedBox(height: 20),
                   if (showWelcomeBanner) const WelcomeBanner(),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          // Handle Phones button click
+                        },
+                        icon: const Icon(Icons.phone),
+                        label: const Text('Telefony'),
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          // Handle Games button click
+                        },
+                        icon: const Icon(Icons.games),
+                        label: const Text('Gry'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 40),
                   GridView.count(
                     crossAxisCount: 3,
                     shrinkWrap: true,
