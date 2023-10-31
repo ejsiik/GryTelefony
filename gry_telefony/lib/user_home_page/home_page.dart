@@ -128,9 +128,9 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 children: [
                   UserNameWidget(user: user),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   if (showWelcomeBanner) const WelcomeBanner(),
-                  const SizedBox(height: 20),
+                  /*const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -149,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                         label: const Text('Gry'),
                       ),
                     ],
-                  ),
+                  ),*/
                   const SizedBox(height: 40),
                   GridView.count(
                     crossAxisCount: 3,

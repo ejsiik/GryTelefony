@@ -108,7 +108,7 @@ class CouponCard extends StatelessWidget {
                     '$couponValue',
                     style: const TextStyle(
                       color: Colors.red,
-                      fontSize: 13,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
