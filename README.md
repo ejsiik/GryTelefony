@@ -4,10 +4,10 @@ This repository hosts a mobile application developed in Flutter for managing cou
 
 ## Preview
 <div>
-  <img src="https://github.com/ejsiik/GryTelefony/blob/main/gry_telefony/github%20screenshots/3.jpg?raw=true" alt="Login page" width="220">
-  <img src="https://github.com/ejsiik/GryTelefony/blob/main/gry_telefony/github%20screenshots/2.jpg?raw=true" alt="Client page" width="220">
-  <img src="https://github.com/ejsiik/GryTelefony/blob/main/gry_telefony/github%20screenshots/1.jpg?raw=true" alt="Qr page" width="220">
-  <img src="https://github.com/ejsiik/GryTelefony/blob/main/gry_telefony/github%20screenshots/4.jpg?raw=true" alt="Admin page" width="220">
+  <img src="https://github.com/ejsiik/GryTelefony/blob/main/gry_telefony/github%20screenshots/3.jpg?raw=true" alt="Login page" width="300">
+  <img src="https://github.com/ejsiik/GryTelefony/blob/main/gry_telefony/github%20screenshots/2.jpg?raw=true" alt="Client page" width="300">
+  <img src="https://github.com/ejsiik/GryTelefony/blob/main/gry_telefony/github%20screenshots/1.jpg?raw=true" alt="Qr page" width="300">
+  <img src="https://github.com/ejsiik/GryTelefony/blob/main/gry_telefony/github%20screenshots/4.jpg?raw=true" alt="Admin page" width="300">
 </div>
 
 
@@ -19,10 +19,10 @@ This repository hosts a mobile application developed in Flutter for managing cou
 - **Enhanced Customer Experience**: Improve customer engagement through digital promotions and personalized deals.
 
 ## Technologies Used
-Dart: The primary programming language used for developing the app.
-Flutter: The framework utilized for creating the mobile application.
-Firebase Authentication: Ensures secure and user-friendly authentication processes.
-Firebase Realtime Database: Provides real-time data synchronization for seamless user experiences.
+- **Dart**: The primary programming language used for developing the app.
+- **Flutter**: The framework utilized for creating the mobile application.
+- **Firebase Authentication**: Ensures secure and user-friendly authentication processes.
+- **Firebase Realtime Database**: Provides real-time data synchronization for seamless user experiences.
 
 ## Getting Started
 To run this Flutter app locally and explore its features, follow these steps:
